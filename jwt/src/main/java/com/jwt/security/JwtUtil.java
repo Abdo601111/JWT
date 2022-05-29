@@ -22,6 +22,7 @@ public class JwtUtil {
     public String generateAccessToken(User user){
         return Jwts.builder()
                 .setSubject(user.getId()+","+user.getEmail())
+                .claim("roles",user.getRoles().toString())
                 .setIssuer("abdoghareeb")
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis()+EXPIRE_DURATION))
@@ -55,7 +56,7 @@ public class JwtUtil {
         return parseClaims(token).getSubject();
     }
 
-    private Claims parseClaims(String token){
+    public Claims parseClaims(String token){
         return  Jwts.parser()
                 .setSigningKey(SECRET_KEY)
                 .parseClaimsJws(token)

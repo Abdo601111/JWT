@@ -1,5 +1,6 @@
 package com.jwt;
 
+import com.jwt.api.Role;
 import com.jwt.api.User;
 import com.jwt.api.UserRepository;
 import org.assertj.core.api.Assertions;
@@ -31,5 +32,17 @@ public class UserRepositoryTest {
         User userSave=respository.save(user);
         Assertions.assertThat(userSave).isNotNull();
         Assertions.assertThat(userSave.getId()).isGreaterThan(0);
+    }
+
+    @Test
+    void testAssignRoleToUser() {
+        int userId=1;
+        int roleId=1;
+        User user= respository.findById(userId).get();
+        user.addRole(new Role(roleId));
+
+        User updatedUser = respository.save(user);
+        Assertions.assertThat(updatedUser.getRoles()).hasSize(1);
+
     }
 }

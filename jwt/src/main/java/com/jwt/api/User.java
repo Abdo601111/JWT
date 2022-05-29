@@ -5,10 +5,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.util.Collection;
+import java.util.*;
 
 @Entity
 @Table(name="users")
@@ -25,10 +26,22 @@ public class User implements UserDetails {
     private String email;
     @Column(nullable = false,length = 128)
     private String password;
+    @ManyToMany
+    @JoinTable(
+            name = "user_role",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name="role_id")
+
+    )
+    Set<Role> roles= new HashSet<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        List<SimpleGrantedAuthority> listAuthorities= new ArrayList<>();
+        for(Role role: roles){
+            listAuthorities.add(new SimpleGrantedAuthority(role.getName()));
+        }
+        return listAuthorities;
     }
 
     @Override
@@ -54,5 +67,9 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public void addRole(Role role){
+        roles.add(role);
     }
 }
